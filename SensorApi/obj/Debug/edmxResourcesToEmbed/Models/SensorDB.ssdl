@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="SensorDBModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+  <EntityType Name="Building">
+    <Key>
+      <PropertyRef Name="BuildingId" />
+    </Key>
+    <Property Name="BuildingId" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="Name" Type="varchar(max)" />
+    <Property Name="Location" Type="text" />
+  </EntityType>
+  <EntityType Name="Pi">
+    <Key>
+      <PropertyRef Name="PiId" />
+    </Key>
+    <Property Name="PiId" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="Name" Type="text" />
+    <Property Name="BuildingId" Type="uniqueidentifier" Nullable="false" />
+  </EntityType>
+  <EntityType Name="Reading">
+    <Key>
+      <PropertyRef Name="ReadingId" />
+    </Key>
+    <Property Name="ReadingId" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="PiId" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="Bmp180_Temp" Type="float" />
+    <Property Name="Bmp180_Pressure" Type="float" />
+    <Property Name="Sdp610_DeltaP" Type="float" />
+    <Property Name="Time" Type="datetime" Nullable="false" />
+  </EntityType>
+  <Association Name="FK_Pi_ToBuilding">
+    <End Role="Building" Type="Self.Building" Multiplicity="1" />
+    <End Role="Pi" Type="Self.Pi" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Building">
+        <PropertyRef Name="BuildingId" />
+      </Principal>
+      <Dependent Role="Pi">
+        <PropertyRef Name="BuildingId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Reading_Pi">
+    <End Role="Pi" Type="Self.Pi" Multiplicity="1" />
+    <End Role="Reading" Type="Self.Reading" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Pi">
+        <PropertyRef Name="PiId" />
+      </Principal>
+      <Dependent Role="Reading">
+        <PropertyRef Name="PiId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityContainer Name="SensorDBModelStoreContainer">
+    <EntitySet Name="Building" EntityType="Self.Building" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="Pi" EntityType="Self.Pi" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="Reading" EntityType="Self.Reading" Schema="dbo" store:Type="Tables" />
+    <AssociationSet Name="FK_Pi_ToBuilding" Association="Self.FK_Pi_ToBuilding">
+      <End Role="Building" EntitySet="Building" />
+      <End Role="Pi" EntitySet="Pi" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Reading_Pi" Association="Self.FK_Reading_Pi">
+      <End Role="Pi" EntitySet="Pi" />
+      <End Role="Reading" EntitySet="Reading" />
+    </AssociationSet>
+  </EntityContainer>
+</Schema>
