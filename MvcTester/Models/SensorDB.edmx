@@ -1,0 +1,204 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="SensorDBModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Building">
+          <Key>
+            <PropertyRef Name="BuildingId" />
+          </Key>
+          <Property Name="BuildingId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Name" Type="varchar(max)" />
+          <Property Name="Location" Type="text" />
+        </EntityType>
+        <EntityType Name="Pi">
+          <Key>
+            <PropertyRef Name="PiId" />
+          </Key>
+          <Property Name="PiId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Name" Type="text" />
+          <Property Name="BuildingId" Type="uniqueidentifier" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Reading">
+          <Key>
+            <PropertyRef Name="ReadingId" />
+          </Key>
+          <Property Name="ReadingId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="PiId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Bmp180_Temp" Type="float" />
+          <Property Name="Bmp180_Pressure" Type="float" />
+          <Property Name="Sdp610_DeltaP" Type="float" />
+          <Property Name="Time" Type="datetime" Nullable="false" />
+        </EntityType>
+        <Association Name="FK_Pi_ToBuilding">
+          <End Role="Building" Type="Self.Building" Multiplicity="1" />
+          <End Role="Pi" Type="Self.Pi" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Building">
+              <PropertyRef Name="BuildingId" />
+            </Principal>
+            <Dependent Role="Pi">
+              <PropertyRef Name="BuildingId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Reading_Pi">
+          <End Role="Pi" Type="Self.Pi" Multiplicity="1" />
+          <End Role="Reading" Type="Self.Reading" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Pi">
+              <PropertyRef Name="PiId" />
+            </Principal>
+            <Dependent Role="Reading">
+              <PropertyRef Name="PiId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="SensorDBModelStoreContainer">
+          <EntitySet Name="Building" EntityType="Self.Building" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Pi" EntityType="Self.Pi" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Reading" EntityType="Self.Reading" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_Pi_ToBuilding" Association="Self.FK_Pi_ToBuilding">
+            <End Role="Building" EntitySet="Building" />
+            <End Role="Pi" EntitySet="Pi" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Reading_Pi" Association="Self.FK_Reading_Pi">
+            <End Role="Pi" EntitySet="Pi" />
+            <End Role="Reading" EntitySet="Reading" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="SensorDBModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Building">
+          <Key>
+            <PropertyRef Name="BuildingId" />
+          </Key>
+          <Property Name="BuildingId" Type="Guid" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Location" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Pis" Relationship="Self.FK_Pi_ToBuilding" FromRole="Building" ToRole="Pi" />
+        </EntityType>
+        <EntityType Name="Pi">
+          <Key>
+            <PropertyRef Name="PiId" />
+          </Key>
+          <Property Name="PiId" Type="Guid" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="BuildingId" Type="Guid" Nullable="false" />
+          <NavigationProperty Name="Building" Relationship="Self.FK_Pi_ToBuilding" FromRole="Pi" ToRole="Building" />
+          <NavigationProperty Name="Readings" Relationship="Self.FK_Reading_Pi" FromRole="Pi" ToRole="Reading" />
+        </EntityType>
+        <EntityType Name="Reading">
+          <Key>
+            <PropertyRef Name="ReadingId" />
+          </Key>
+          <Property Name="ReadingId" Type="Guid" Nullable="false" />
+          <Property Name="PiId" Type="Guid" Nullable="false" />
+          <Property Name="Bmp180_Temp" Type="Double" />
+          <Property Name="Bmp180_Pressure" Type="Double" />
+          <Property Name="Sdp610_DeltaP" Type="Double" />
+          <Property Name="Time" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="Pi" Relationship="Self.FK_Reading_Pi" FromRole="Reading" ToRole="Pi" />
+        </EntityType>
+        <Association Name="FK_Pi_ToBuilding">
+          <End Role="Building" Type="Self.Building" Multiplicity="1" />
+          <End Role="Pi" Type="Self.Pi" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Building">
+              <PropertyRef Name="BuildingId" />
+            </Principal>
+            <Dependent Role="Pi">
+              <PropertyRef Name="BuildingId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Reading_Pi">
+          <End Role="Pi" Type="Self.Pi" Multiplicity="1" />
+          <End Role="Reading" Type="Self.Reading" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Pi">
+              <PropertyRef Name="PiId" />
+            </Principal>
+            <Dependent Role="Reading">
+              <PropertyRef Name="PiId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="SensorDBEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Buildings" EntityType="Self.Building" />
+          <EntitySet Name="Pis" EntityType="Self.Pi" />
+          <EntitySet Name="Readings" EntityType="Self.Reading" />
+          <AssociationSet Name="FK_Pi_ToBuilding" Association="Self.FK_Pi_ToBuilding">
+            <End Role="Building" EntitySet="Buildings" />
+            <End Role="Pi" EntitySet="Pis" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Reading_Pi" Association="Self.FK_Reading_Pi">
+            <End Role="Pi" EntitySet="Pis" />
+            <End Role="Reading" EntitySet="Readings" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="SensorDBModelStoreContainer" CdmEntityContainer="SensorDBEntities">
+          <EntitySetMapping Name="Buildings">
+            <EntityTypeMapping TypeName="SensorDBModel.Building">
+              <MappingFragment StoreEntitySet="Building">
+                <ScalarProperty Name="BuildingId" ColumnName="BuildingId" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Location" ColumnName="Location" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Pis">
+            <EntityTypeMapping TypeName="SensorDBModel.Pi">
+              <MappingFragment StoreEntitySet="Pi">
+                <ScalarProperty Name="PiId" ColumnName="PiId" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="BuildingId" ColumnName="BuildingId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Readings">
+            <EntityTypeMapping TypeName="SensorDBModel.Reading">
+              <MappingFragment StoreEntitySet="Reading">
+                <ScalarProperty Name="ReadingId" ColumnName="ReadingId" />
+                <ScalarProperty Name="PiId" ColumnName="PiId" />
+                <ScalarProperty Name="Bmp180_Temp" ColumnName="Bmp180_Temp" />
+                <ScalarProperty Name="Bmp180_Pressure" ColumnName="Bmp180_Pressure" />
+                <ScalarProperty Name="Sdp610_DeltaP" ColumnName="Sdp610_DeltaP" />
+                <ScalarProperty Name="Time" ColumnName="Time" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="true" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

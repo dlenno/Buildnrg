@@ -1,0 +1,107 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="SensorDBModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+  <EntityType Name="Building">
+    <Key>
+      <PropertyRef Name="BuildingId" />
+    </Key>
+    <Property Name="BuildingId" Type="Guid" Nullable="false" />
+    <Property Name="Name" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+    <Property Name="Location" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+    <NavigationProperty Name="Pis" Relationship="Self.FK_Pi_ToBuilding" FromRole="Building" ToRole="Pi" />
+    <NavigationProperty Name="Readings" Relationship="Self.FK_Reading_ToTable" FromRole="Building" ToRole="Reading" />
+  </EntityType>
+  <EntityType Name="Pi">
+    <Key>
+      <PropertyRef Name="PiId" />
+    </Key>
+    <Property Name="PiId" Type="Guid" Nullable="false" />
+    <Property Name="Name" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+    <Property Name="BuildingId" Type="Guid" Nullable="false" />
+    <NavigationProperty Name="Building" Relationship="Self.FK_Pi_ToBuilding" FromRole="Pi" ToRole="Building" />
+  </EntityType>
+  <EntityType Name="Reading">
+    <Key>
+      <PropertyRef Name="ReadingId" />
+    </Key>
+    <Property Name="ReadingId" Type="Guid" Nullable="false" />
+    <Property Name="BuildingId" Type="Guid" Nullable="false" />
+    <Property Name="PiId" Type="Guid" Nullable="false" />
+    <Property Name="Bmp180_Temp" Type="Double" />
+    <Property Name="Bmp180_Pressure" Type="Double" />
+    <Property Name="Sdp610_DeltaP" Type="Double" />
+    <Property Name="Time" Type="DateTime" Nullable="false" Precision="3" />
+    <NavigationProperty Name="Building" Relationship="Self.FK_Reading_ToTable" FromRole="Reading" ToRole="Building" />
+    <NavigationProperty Name="Reading1" Relationship="Self.FK_Reading_ToTable_1" FromRole="Reading" ToRole="Reading1" />
+    <NavigationProperty Name="Reading2" Relationship="Self.FK_Reading_ToTable_1" FromRole="Reading1" ToRole="Reading" />
+  </EntityType>
+  <EntityType Name="database_firewall_rules">
+    <Key>
+      <PropertyRef Name="id" />
+      <PropertyRef Name="name" />
+      <PropertyRef Name="start_ip_address" />
+      <PropertyRef Name="end_ip_address" />
+      <PropertyRef Name="create_date" />
+      <PropertyRef Name="modify_date" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="name" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="start_ip_address" Type="String" MaxLength="45" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="end_ip_address" Type="String" MaxLength="45" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="create_date" Type="DateTime" Nullable="false" Precision="3" />
+    <Property Name="modify_date" Type="DateTime" Nullable="false" Precision="3" />
+  </EntityType>
+  <Association Name="FK_Pi_ToBuilding">
+    <End Role="Building" Type="Self.Building" Multiplicity="1" />
+    <End Role="Pi" Type="Self.Pi" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Building">
+        <PropertyRef Name="BuildingId" />
+      </Principal>
+      <Dependent Role="Pi">
+        <PropertyRef Name="BuildingId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Reading_ToTable">
+    <End Role="Building" Type="Self.Building" Multiplicity="1" />
+    <End Role="Reading" Type="Self.Reading" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Building">
+        <PropertyRef Name="BuildingId" />
+      </Principal>
+      <Dependent Role="Reading">
+        <PropertyRef Name="BuildingId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Reading_ToTable_1">
+    <End Role="Reading" Type="Self.Reading" Multiplicity="1" />
+    <End Role="Reading1" Type="Self.Reading" Multiplicity="0..1" />
+    <ReferentialConstraint>
+      <Principal Role="Reading">
+        <PropertyRef Name="ReadingId" />
+      </Principal>
+      <Dependent Role="Reading1">
+        <PropertyRef Name="ReadingId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityContainer Name="SensorDBEntities" annotation:LazyLoadingEnabled="true">
+    <EntitySet Name="Buildings" EntityType="Self.Building" />
+    <EntitySet Name="Pis" EntityType="Self.Pi" />
+    <EntitySet Name="Readings" EntityType="Self.Reading" />
+    <EntitySet Name="database_firewall_rules" EntityType="Self.database_firewall_rules" />
+    <AssociationSet Name="FK_Pi_ToBuilding" Association="Self.FK_Pi_ToBuilding">
+      <End Role="Building" EntitySet="Buildings" />
+      <End Role="Pi" EntitySet="Pis" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Reading_ToTable" Association="Self.FK_Reading_ToTable">
+      <End Role="Building" EntitySet="Buildings" />
+      <End Role="Reading" EntitySet="Readings" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Reading_ToTable_1" Association="Self.FK_Reading_ToTable_1">
+      <End Role="Reading" EntitySet="Readings" />
+      <End Role="Reading1" EntitySet="Readings" />
+    </AssociationSet>
+  </EntityContainer>
+</Schema>

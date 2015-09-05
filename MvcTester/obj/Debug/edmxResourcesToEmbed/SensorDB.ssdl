@@ -1,0 +1,112 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="SensorDBModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+  <EntityType Name="Building">
+    <Key>
+      <PropertyRef Name="BuildingId" />
+    </Key>
+    <Property Name="BuildingId" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="Name" Type="varchar(max)" />
+    <Property Name="Location" Type="text" />
+  </EntityType>
+  <EntityType Name="Pi">
+    <Key>
+      <PropertyRef Name="PiId" />
+    </Key>
+    <Property Name="PiId" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="Name" Type="text" />
+    <Property Name="BuildingId" Type="uniqueidentifier" Nullable="false" />
+  </EntityType>
+  <EntityType Name="Reading">
+    <Key>
+      <PropertyRef Name="ReadingId" />
+    </Key>
+    <Property Name="ReadingId" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="BuildingId" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="PiId" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="Bmp180_Temp" Type="float" />
+    <Property Name="Bmp180_Pressure" Type="float" />
+    <Property Name="Sdp610_DeltaP" Type="float" />
+    <Property Name="Time" Type="datetime" Nullable="false" />
+  </EntityType>
+  <!--Errors Found During Generation:
+warning 6002: The table/view 'SensorDB.sys.database_firewall_rules' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+  <EntityType Name="database_firewall_rules">
+    <Key>
+      <PropertyRef Name="id" />
+      <PropertyRef Name="name" />
+      <PropertyRef Name="start_ip_address" />
+      <PropertyRef Name="end_ip_address" />
+      <PropertyRef Name="create_date" />
+      <PropertyRef Name="modify_date" />
+    </Key>
+    <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="name" Type="nvarchar" MaxLength="128" Nullable="false" />
+    <Property Name="start_ip_address" Type="varchar" MaxLength="45" Nullable="false" />
+    <Property Name="end_ip_address" Type="varchar" MaxLength="45" Nullable="false" />
+    <Property Name="create_date" Type="datetime" Nullable="false" />
+    <Property Name="modify_date" Type="datetime" Nullable="false" />
+  </EntityType>
+  <Association Name="FK_Pi_ToBuilding">
+    <End Role="Building" Type="Self.Building" Multiplicity="1" />
+    <End Role="Pi" Type="Self.Pi" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Building">
+        <PropertyRef Name="BuildingId" />
+      </Principal>
+      <Dependent Role="Pi">
+        <PropertyRef Name="BuildingId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Reading_ToTable">
+    <End Role="Building" Type="Self.Building" Multiplicity="1" />
+    <End Role="Reading" Type="Self.Reading" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Building">
+        <PropertyRef Name="BuildingId" />
+      </Principal>
+      <Dependent Role="Reading">
+        <PropertyRef Name="BuildingId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Reading_ToTable_1">
+    <End Role="Reading" Type="Self.Reading" Multiplicity="1" />
+    <End Role="Reading1" Type="Self.Reading" Multiplicity="0..1" />
+    <ReferentialConstraint>
+      <Principal Role="Reading">
+        <PropertyRef Name="ReadingId" />
+      </Principal>
+      <Dependent Role="Reading1">
+        <PropertyRef Name="ReadingId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityContainer Name="SensorDBModelStoreContainer">
+    <EntitySet Name="Building" EntityType="Self.Building" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="Pi" EntityType="Self.Pi" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="Reading" EntityType="Self.Reading" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="database_firewall_rules" EntityType="Self.database_firewall_rules" store:Type="Views" store:Schema="sys">
+      <DefiningQuery>SELECT 
+[database_firewall_rules].[id] AS [id], 
+[database_firewall_rules].[name] AS [name], 
+[database_firewall_rules].[start_ip_address] AS [start_ip_address], 
+[database_firewall_rules].[end_ip_address] AS [end_ip_address], 
+[database_firewall_rules].[create_date] AS [create_date], 
+[database_firewall_rules].[modify_date] AS [modify_date]
+FROM [sys].[database_firewall_rules] AS [database_firewall_rules]</DefiningQuery>
+    </EntitySet>
+    <AssociationSet Name="FK_Pi_ToBuilding" Association="Self.FK_Pi_ToBuilding">
+      <End Role="Building" EntitySet="Building" />
+      <End Role="Pi" EntitySet="Pi" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Reading_ToTable" Association="Self.FK_Reading_ToTable">
+      <End Role="Building" EntitySet="Building" />
+      <End Role="Reading" EntitySet="Reading" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Reading_ToTable_1" Association="Self.FK_Reading_ToTable_1">
+      <End Role="Reading" EntitySet="Reading" />
+      <End Role="Reading1" EntitySet="Reading" />
+    </AssociationSet>
+  </EntityContainer>
+</Schema>

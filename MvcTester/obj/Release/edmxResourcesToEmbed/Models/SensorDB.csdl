@@ -1,0 +1,71 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="SensorDBModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+  <EntityType Name="Building">
+    <Key>
+      <PropertyRef Name="BuildingId" />
+    </Key>
+    <Property Name="BuildingId" Type="Guid" Nullable="false" />
+    <Property Name="Name" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+    <Property Name="Location" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+    <NavigationProperty Name="Pis" Relationship="Self.FK_Pi_ToBuilding" FromRole="Building" ToRole="Pi" />
+  </EntityType>
+  <EntityType Name="Pi">
+    <Key>
+      <PropertyRef Name="PiId" />
+    </Key>
+    <Property Name="PiId" Type="Guid" Nullable="false" />
+    <Property Name="Name" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+    <Property Name="BuildingId" Type="Guid" Nullable="false" />
+    <NavigationProperty Name="Building" Relationship="Self.FK_Pi_ToBuilding" FromRole="Pi" ToRole="Building" />
+    <NavigationProperty Name="Readings" Relationship="Self.FK_Reading_Pi" FromRole="Pi" ToRole="Reading" />
+  </EntityType>
+  <EntityType Name="Reading">
+    <Key>
+      <PropertyRef Name="ReadingId" />
+    </Key>
+    <Property Name="ReadingId" Type="Guid" Nullable="false" />
+    <Property Name="PiId" Type="Guid" Nullable="false" />
+    <Property Name="Bmp180_Temp" Type="Double" />
+    <Property Name="Bmp180_Pressure" Type="Double" />
+    <Property Name="Sdp610_DeltaP" Type="Double" />
+    <Property Name="Time" Type="DateTime" Nullable="false" Precision="3" />
+    <NavigationProperty Name="Pi" Relationship="Self.FK_Reading_Pi" FromRole="Reading" ToRole="Pi" />
+  </EntityType>
+  <Association Name="FK_Pi_ToBuilding">
+    <End Role="Building" Type="Self.Building" Multiplicity="1" />
+    <End Role="Pi" Type="Self.Pi" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Building">
+        <PropertyRef Name="BuildingId" />
+      </Principal>
+      <Dependent Role="Pi">
+        <PropertyRef Name="BuildingId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Reading_Pi">
+    <End Role="Pi" Type="Self.Pi" Multiplicity="1" />
+    <End Role="Reading" Type="Self.Reading" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Pi">
+        <PropertyRef Name="PiId" />
+      </Principal>
+      <Dependent Role="Reading">
+        <PropertyRef Name="PiId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityContainer Name="SensorDBEntities" annotation:LazyLoadingEnabled="true">
+    <EntitySet Name="Buildings" EntityType="Self.Building" />
+    <EntitySet Name="Pis" EntityType="Self.Pi" />
+    <EntitySet Name="Readings" EntityType="Self.Reading" />
+    <AssociationSet Name="FK_Pi_ToBuilding" Association="Self.FK_Pi_ToBuilding">
+      <End Role="Building" EntitySet="Buildings" />
+      <End Role="Pi" EntitySet="Pis" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Reading_Pi" Association="Self.FK_Reading_Pi">
+      <End Role="Pi" EntitySet="Pis" />
+      <End Role="Reading" EntitySet="Readings" />
+    </AssociationSet>
+  </EntityContainer>
+</Schema>

@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<parameters>
+  <parameter name="DefaultConnection-Web.config Connection String" description="DefaultConnection Connection String used in web.config by the application to access the database." defaultValue="Data Source=(LocalDb)\v11.0;Initial Catalog=aspnet-MvcTester-20150830160436;Integrated Security=SSPI;AttachDBFilename=|DataDirectory|\aspnet-MvcTester-20150830160436.mdf" tags="SqlConnectionString">
+    <parameterEntry kind="XmlFile" scope="C:\\Users\\ed\\Documents\\Visual\ Studio\ 2013\\Projects\\SensorApi\\MvcTester\\obj\\Release\\Package\\PackageTmp\\Web\.config$" match="/configuration/connectionStrings/add[@name='DefaultConnection']/@connectionString" />
+  </parameter>
+  <parameter name="SensorDBEntities-Web.config Connection String" description="SensorDBEntities Connection String used in web.config by the application to access the database." defaultValue="metadata=res://*/Models.SensorDB.csdl|res://*/Models.SensorDB.ssdl|res://*/Models.SensorDB.msl;provider=System.Data.SqlClient;provider connection string=&quot;data source=a8nbedjgkm.database.windows.net;initial catalog=SensorDB;persist security info=True;user id=eddie;password=B20breffni;MultipleActiveResultSets=True;App=EntityFramework&quot;" tags="SqlConnectionString">
+    <parameterEntry kind="XmlFile" scope="C:\\Users\\ed\\Documents\\Visual\ Studio\ 2013\\Projects\\SensorApi\\MvcTester\\obj\\Release\\Package\\PackageTmp\\Web\.config$" match="/configuration/connectionStrings/add[@name='SensorDBEntities']/@connectionString" />
+  </parameter>
+</parameters>
